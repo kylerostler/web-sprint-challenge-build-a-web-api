@@ -25,7 +25,7 @@ router.get('/:id', checkProjectId, (req, res, next) => {
 })
 
 router.post('/', checkProjectPayload, (req, res, next) => {
-  Project.add(req.body)
+  Project.insert(req.body)
   .then(project => {
     res.status(201).json(project)
   })
@@ -33,9 +33,29 @@ router.post('/', checkProjectPayload, (req, res, next) => {
 })
 
 router.put('/:id', checkProjectId, checkProjectPayload, (req, res, next) => {
-  Project.update(req.params.id, req.body)
+  Project.get(req.params)
   .then(project => {
-    res.status(200).json(project)
+    if(!project) {
+      res.status(404).json({
+        message: 'the project with that id does not exist'
+      })
+    } else {
+      Project.update(req.params.id, req.body)
+    }
+  })
+  .then(data => {
+    if (data) {
+      Project.get(req.params.id)
+    } else {
+      res.status(500).json({
+        message: 'something went wrong with data'
+      })
+    }
+  })
+  .then(project => {
+    if (project) {
+      res.json(project)
+    }
   })
   .catch(next)
 })

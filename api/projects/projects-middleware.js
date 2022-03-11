@@ -19,12 +19,13 @@ const checkProjectId = (req, res, next) =>{
 }
 
 const checkProjectPayload = (req, res, next) => {
-    if(req.body.name && req.body.description && !req.body.completed) {
-        req.body.name = req.body.name.trim();
-        req.body.description = req.body.description.trim();
+    if(req.body.name && req.body.description) {
+        (project => {
+            req.project = project
+        })
         next()
     } else {
-        next({ status: 422,
+        next({ status: 400,
         message: `projects requires valid info`})
     }
 }
