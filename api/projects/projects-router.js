@@ -32,32 +32,36 @@ router.post('/', checkProjectPayload, (req, res, next) => {
   .catch(next)
 })
 
-router.put('/:id', checkProjectId, checkProjectPayload, (req, res, next) => {
-  Project.get(req.params)
-  .then(project => {
-    if(!project) {
-      res.status(404).json({
-        message: 'the project with that id does not exist'
+router.put('/:id', (req, res, next) => {
+const { id } = req.params
+const { name, description, completed } = req.body
+
+if(!name || !description || completed === undefined) {
+  res.status(400).json({ message: 'Name, description, and completed status are required' })
+} else {
+  Project.get(id)
+      .then(project => {
+          if(!project) {
+              res.status(404).json({ message: 'The project with that id does not exist' })
+          } else {
+              return Project.update(req.params.id, req.body)
+          }
       })
-    } else {
-      Project.update(req.params.id, req.body)
-    }
-  })
-  .then(data => {
-    if (data) {
-      Project.get(req.params.id)
-    } else {
-      res.status(500).json({
-        message: 'something went wrong with data'
+      .then(data => {
+          if (data) {
+              return Project.get(req.params.id)
+          }
       })
-    }
-  })
-  .then(project => {
-    if (project) {
-      res.json(project)
-    }
-  })
-  .catch(next)
+      .then(project => {
+          if (project) {
+              res.json(project)
+          }
+      })
+      .catch(error => {
+          console.log(error);
+          res.status(500).json({ message: 'The project information could not be changed'})
+      })
+}
 })
 
 router.delete('/:id', checkProjectId, (req, res, next) => {
