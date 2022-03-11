@@ -12,9 +12,7 @@ router.get('/', (req, res, next) => {
     Project.get()
     .then((projects) => {
         if (!projects) {
-          res.status(200).json({
-            message: 'no projects to be seen'
-          })
+          res.status(200).json([])
         } else {
           res.status(200).json(projects)
         }
@@ -22,24 +20,52 @@ router.get('/', (req, res, next) => {
     .catch(next)
 })
 
-router.get('/:id', (req, res, next) => {
-
+router.get('/:id', checkProjectId, (req, res, next) => {
+  res.json(req.project)
 })
 
-router.post('/', (req, res, next) => {
-
+router.post('/', checkProjectPayload, (req, res, next) => {
+  Project.add(req.body)
+  .then(project => {
+    res.status(201).json(project)
+  })
+  .catch(next)
 })
 
-router.put('/:id', (req, res, next) => {
-
+router.put('/:id', checkProjectId, checkProjectPayload, (req, res, next) => {
+  Project.update(req.params.id, req.body)
+  .then(project => {
+    if (!project) {
+      res.status(404).json({
+        message: 'no such project'
+      })
+    } else {
+      res.status(200).json(project)
+    }
+  })
+  .catch(next)
 })
 
-router.delete('/:id', (req, res, next) => {
-
+router.delete('/:id', checkProjectId, (req, res, next) => {
+  Project.remove(req.params.id)
+  .then(stuff => {
+    res.status(200).json({ message: 'project obliterated'})
+  })
+  .catch(next)
 })
 
 router.get('/:id/actions', (req, res, next) => {
-
+  Project.getProjectActions(req.params.id)
+  .then(actions => {
+    if (!actions) {
+      res.status(404).json({
+        message: 'no actions'
+      })
+    } else {
+      res.status(200).json(actions)
+    }
+  })
+  .catch(next)
 })
 
 router.use((err, req, res, next) => {
