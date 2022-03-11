@@ -12,3 +12,14 @@ I need this code, but don't know where, perhaps should make some middleware, don
 
 Pull your server into this file and start it!
 */
+const express = require('express')
+const PORT = process.env.PORT || 9000
+const server = express()
+
+server.get('/', (req, res) => {
+    res.end('<h1>default path<h1>')
+})
+
+server.listen(PORT, () => {
+    console.log(`server is up on `, PORT)
+})
