@@ -35,20 +35,14 @@ router.post('/', checkProjectPayload, (req, res, next) => {
 router.put('/:id', checkProjectId, checkProjectPayload, (req, res, next) => {
   Project.update(req.params.id, req.body)
   .then(project => {
-    if (!project) {
-      res.status(404).json({
-        message: 'no such project'
-      })
-    } else {
-      res.status(200).json(project)
-    }
+    res.status(200).json(project)
   })
   .catch(next)
 })
 
 router.delete('/:id', checkProjectId, (req, res, next) => {
   Project.remove(req.params.id)
-  .then(stuff => {
+  .then(() => {
     res.status(200).json({ message: 'project obliterated'})
   })
   .catch(next)
