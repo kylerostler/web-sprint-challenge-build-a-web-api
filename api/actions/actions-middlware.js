@@ -17,14 +17,17 @@ const checkActionId = (req, res, next) =>{
     .catch(next)
 }
 
-const checkActionPayload = (req, res, next) => {
-    if(req.body.name && req.body.description && !req.body.completed) {
-        req.body.name = req.body.name.trim();
-        req.body.description = req.body.description.trim();
-        next()
+function checkActionPayload(req, res, next) {
+    if (req.body.description && req.body.notes && req.body.project_id) {
+        (action => {
+            req.action = action
+        })
+        next();
     } else {
-        next({ status: 422,
-        message: `action requires valid info`})
+        next({
+            status: 400,
+            message: 'a description and notes are required'
+        });
     }
 }
 
